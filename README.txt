@@ -1,1 +1,1 @@
-Open Firebase, add your config in firebase-config.js and upload to GitHub Pages.
+Open abhinabakgp.github.io/chat and login using your google account.
