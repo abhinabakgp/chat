@@ -1,16 +1,94 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
 <meta charset="UTF-8">
-<title>Chat Login</title>
-<link rel="stylesheet" href="style.css">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>DogeshChat</title>
+
+<link
+rel="stylesheet"
+href="style.css">
+
+<link
+href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+rel="stylesheet">
+
 </head>
+
 <body>
-<div class="container">
-<h1>Realtime Chat</h1>
-<button id="googleLogin">Login with Google</button>
+
+<div class="landing">
+
+    <div class="leftSide">
+
+        <img
+        src="logo0.png"
+        class="mainLogo"
+        alt="Logo">
+
+    </div>
+
+
+    <div class="rightSide">
+
+        <h1>
+            A modern place for useless conversations
+        </h1>
+
+        <p>
+
+            Connect with your friends and family instantly ...
+
+        </p>
+
+        
+
+
+<div class="email-login">
+
+<input
+type="email"
+id="email"
+placeholder="Email"
+>
+
+<input
+type="password"
+id="password"
+placeholder="Password"
+>
+
+<button id="signupBtn">
+Sign Up
+</button>
+
+<button id="loginBtn">
+Login
+</button>
+
+<div id = "authMessage"></div>
+
+<h3 style="margin: 10px auto ;">Or</h3>
+  <button class="google-btn" id = "googleLogin">
+    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo">
+   &nbsp; Continue with Google
+  </button>
+
 </div>
 
-<script type="module" src="app.js"></script>
+  
+</div>
+</div>
+
+<script
+type="module"
+src="app.js">
+</script>
+
 </body>
 </html>
