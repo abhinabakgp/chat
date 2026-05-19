@@ -1,102 +1,76 @@
+
 import { auth, db } from './firebase-config.js';
 
 import {
-GoogleAuthProvider,
-signInWithPopup,
-onAuthStateChanged
+    GoogleAuthProvider,
+    signInWithPopup,
+    onAuthStateChanged,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    sendEmailVerification,
+    signOut
 }
-from
-'https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js';
+from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js';
 
 
 import {
-doc,
-setDoc
+    doc,
+    setDoc
 }
-from
-'https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js';
+from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js';
 
 
-const googleLogin=
-document.getElementById(
-'googleLogin'
-);
+
+// -------------------- Buttons --------------------
+
+const googleLogin =
+document.getElementById('googleLogin');
+
+const signupBtn =
+document.getElementById('signupBtn');
+
+const loginBtn =
+document.getElementById('loginBtn');
+
+const email =
+document.getElementById('email');
+
+const password =
+document.getElementById('password');
 
 
-const provider=
+
+const provider =
 new GoogleAuthProvider();
 
 
 
-onAuthStateChanged(
-auth,
-
-async(user)=>{
-
-if(user){
-
-console.log(
-"Logged in:",
-user.displayName
-);
-
-
-await setDoc(
-
-doc(
-db,
-'users',
-user.uid
-),
-
-{
-
-uid:
-user.uid,
-
-name:
-user.displayName,
-
-photo:
-user.photoURL,
-
-email:
-user.email,
-
-online:true,
-
-time:
-Date.now()
-
-}
-
-);
-
-
-console.log(
-"User stored"
-);
-
-
-window.location=
-'chat.html';
-
-}
-
-});
-
-
-
-
-googleLogin.onclick=
-async()=>{
+googleLogin.onclick=async()=>{
 
 try{
 
+const result=
 await signInWithPopup(
 auth,
 provider
 );
+
+const user=result.user;
+
+await setDoc(
+doc(db,'users',user.uid),
+{
+uid:user.uid,
+name:user.displayName,
+photo:user.photoURL,
+email:user.email,
+online:true,
+time:Date.now()
+},
+{merge:true}
+);
+
+window.location='chat.html';
 
 }
 catch(e){
@@ -104,5 +78,143 @@ catch(e){
 console.log(e);
 
 }
+}
+
+
+
+// -----------------------------------------
+
+const authMessage =
+document.getElementById(
+"authMessage"
+);
+
+function showMessage(
+text,
+color="#ff8080"
+){
+
+authMessage.innerText=
+text;
+
+authMessage.style.color=
+color;
 
 }
+
+
+
+// -------------------- Email Signup --------------------
+
+signupBtn.onclick=
+async()=>{
+
+try{
+
+const userCredential=
+
+await createUserWithEmailAndPassword(
+
+auth,
+email.value,
+password.value
+
+);
+
+
+await sendEmailVerification(
+userCredential.user
+);
+
+
+showMessage(
+"Verification Email Sent. Check Inbox."
+);
+
+
+await signOut(auth);
+
+
+}
+catch(e){
+
+console.log(e);
+
+showMessage(
+(e.message.match(/\(auth\/(.*?)\)/)?.[1] || e.message)
+.replace(/-/g," ")
+.replace(/\b\w/g,c=>c.toUpperCase())
+);
+}
+
+}
+
+
+
+
+// -------------------- Email Login --------------------
+
+loginBtn.onclick=
+async()=>{
+
+try{
+
+const userCredential=
+
+await signInWithEmailAndPassword(
+
+auth,
+email.value,
+password.value
+
+);
+
+
+
+
+const user=userCredential.user;
+
+await user.reload();
+
+if(!user.emailVerified){
+
+showMessage(
+"Please Verify Email Before Login"
+);
+
+await signOut(auth);
+
+return;
+
+}
+
+await setDoc(
+doc(db,'users',user.uid),
+{
+uid:user.uid,
+name:user.email.split("@")[0],
+photo:"https://ui-avatars.com/api/"+name,
+email:user.email,
+online:true,
+time:Date.now()
+},
+{merge:true}
+);
+
+window.location='chat.html';
+
+
+}
+catch(e){
+
+console.log(e);
+
+showMessage(
+(e.message.match(/\(auth\/(.*?)\)/)?.[1] || e.message).replace(/-/g," ").replace(/\b\w/g,c=>c.toUpperCase())
+);
+
+}
+
+}
+
+
