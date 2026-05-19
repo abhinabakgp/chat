@@ -5,21 +5,45 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport"
+<meta
+name="viewport"
 content="width=device-width,initial-scale=1">
 
-<title>Realtime Chat</title>
+<link rel="icon" type="image/png" href="logo1.png">
 
-<link rel="stylesheet"
+<title>DogeshChat</title>
+
+<link
+rel="stylesheet"
 href="style.css">
+
+<style>
+    #sendBox, #chatHeader{
+        visibility: hidden;
+    }
+</style>
 
 </head>
 
 <body>
 
-<div class="topbar">
+<div class="main">
 
-<div class="profileArea">
+
+<div class="sidebar">
+
+<h2 style="margin: 20px 10px;">DogeshChat</h2>
+
+<input id = "searchUser" type="text" placeholder="Find People or Start new chat">
+
+<h3>&ensp;Chats</h3>
+
+<div id="users">
+
+</div>
+
+
+<div class="myProfile">
 
 <img
 id="profilePic"
@@ -28,64 +52,84 @@ src="">
 <div>
 
 <div id="username">
+
 Loading...
+
 </div>
 
-<button id="logoutBtn">
+<button
+id="logoutBtn">
+
 Logout
+
 </button>
 
 </div>
 
 </div>
 
-</div>
-
-
-<div class="main">
-
-<div class="sidebar">
-
-<h2>
-Users
-</h2>
-
-<div id="users">
 
 </div>
 
-</div>
 
 
 <div class="chatArea">
 
-<div id="chatBox">
+
+<div id="chatHeader">
+
+<img
+id="chatUserPic"
+src="">
+
+
+<div id="chatUserName">Loading ...</div>
 
 </div>
 
 
-<div class="sendBox">
-
-<input
-id="messageInput"
-placeholder="Type message...">
 
 
-<button id="sendBtn">
-Send
-</button>
+
+<div id="welcomePage">
+
+    <img
+    src="logo0.png"
+    alt="Dogesh-Logo">
+
+    <h2>
+        Select a person to start chatting
+    </h2>
+
+    <p>
+        Connect instantly with friends in real time
+    </p>
 
 </div>
 
+
+
+
+
+<div id="chatBox"></div>
+
+<div id="sendBox">
+    <input id="messageInput" placeholder= "Type message...">
+    <button id="sendBtn">Send </button>
 </div>
+
 
 </div>
 
+
+</div>
 
 <script
 type="module"
 src="chat.js">
 </script>
+
+
 
 </body>
 
