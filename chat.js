@@ -49,9 +49,32 @@ let selectedUser=null;
 
 
 
-onAuthStateChanged(
-auth,
-(user)=>{
+// onAuthStateChanged(
+// auth,
+// (user)=>{
+
+// if(!user){
+
+// window.location="index.html";
+// return;
+
+// }
+
+// me=user;
+
+// username.innerText=
+// user.displayName;
+
+// profilePic.src=
+// user.photoURL;
+
+// loadUsers();
+
+// });
+
+
+
+onAuthStateChanged(auth,(user)=>{
 
 if(!user){
 
@@ -63,20 +86,19 @@ return;
 me=user;
 
 username.innerText=
-user.displayName;
+user.displayName ||
+user.email.split("@")[0];
 
 profilePic.src=
-user.photoURL;
-
-
-console.log(
-"My UID:",
-user.uid
-);
+user.photoURL ||
+"https://ui-avatars.com/api/"+username.innerText;
 
 loadUsers();
 
 });
+
+
+
 
 
 
@@ -89,9 +111,10 @@ signOut(auth);
 
 
 
-function loadUsers(){
+async function loadUsers(){
 
-const q=query(
+const q=
+query(
 collection(
 db,
 'users'
@@ -104,67 +127,68 @@ q,
 
 (snapshot)=>{
 
+
 usersDiv.innerHTML='';
-
-
-console.log(
-"TOTAL USERS:",
-snapshot.size
-);
 
 
 snapshot.forEach(
 (doc)=>{
 
-const u=
-doc.data();
-
-
-console.log(
-"USER:",
-u.name,
-u.uid
-);
+const u= doc.data();
 
 
 if(
 u.uid!==me.uid
+&&
+u.online===true
 ){
 
-let div=
+const div=
 document.createElement(
 'div'
 );
 
-div.className=
-'user';
+div.className='user';
+
+
+if(
+selectedUser &&
+selectedUser.uid===u.uid
+){
+
+div.style.background=
+'#2e2525';
+
+}
+
 
 div.innerHTML=
 `
+
 <img
 src="${u.photo}"
 style="
-width:35px;
-height:35px;
-height:35px;
-border-radius:50%;
+width:45px;
+height:45px;
+border-radius:20%;
 margin-right:10px;
-vertical-align:middle;
 ">
 
 ${u.name}
+
 `;
 
+div.onclick=()=>{
 
-div.onclick=
-()=>{
 
 selectedUser=u;
 
-console.log(
-"Selected:",
-u.name
-);
+document.getElementById("sendBox").style.visibility = 'visible';
+document.getElementById("chatHeader").style.visibility = 'visible';
+try {
+    document.getElementById("welcomePage").remove();
+}
+catch(error){};
 
 document
 .querySelectorAll(
@@ -174,24 +198,17 @@ document
 x=>x.style.background=''
 );
 
-div.style.background=
-'#ccc';
-
-
-chatBox.innerHTML='';
+div.style.background = '#293458';
 
 loadMessages();
 
 };
 
 
-usersDiv.appendChild(
-div);
+usersDiv.appendChild(div);
 
 }
-
 });
-
 });
 
 }
@@ -200,12 +217,6 @@ div);
 
 sendBtn.onclick=
 async()=>{
-
-
-console.log(
-selectedUser
-);
-
 
 if(
 selectedUser===null
@@ -257,9 +268,29 @@ messageInput.value='';
 
 };
 
+// ............................................................
+
+messageInput.addEventListener(
+'keypress',
+(e)=>{
+
+if(e.key==="Enter"){
+
+sendBtn.click();
+
+}
+
+});
+
+// ___________________________________________________________________
 
 
 function loadMessages(){
+
+document.getElementById('chatUserName').innerText = selectedUser.name;
+
+document.getElementById('chatUserPic').src = selectedUser.photo;
+
 
 
 const q=
@@ -278,10 +309,10 @@ orderBy(
 
 
 onSnapshot(
+
 q,
 
 (snapshot)=>{
-
 
 chatBox.innerHTML='';
 
@@ -293,43 +324,51 @@ const m=
 doc.data();
 
 
-if(
+const ok=
 
-(m.sender===me.uid &&
-m.receiver===selectedUser.uid)
+(
+m.sender===me.uid
+&&
+m.receiver===selectedUser.uid
+)
 
 ||
 
-(m.sender===selectedUser.uid &&
-m.receiver===me.uid)
+(
+m.sender===selectedUser.uid
+&&
+m.receiver===me.uid
+);
 
-){
 
-let div=
+if(ok){
+
+const div=
 document.createElement(
 'div'
 );
 
-div.className=
-'message';
 
-div.innerHTML=
+if(
 m.sender===me.uid
+){
 
-?
+div.className=
+'message sent';
 
-"<b>You:</b> "
-+m.text
+}
+else{
 
-:
+div.className=
+'message received';
 
-"<b>"
-+
-selectedUser.name
-+
-":</b> "
-+
-m.text;
+}
+
+
+div.innerHTML=m.text.replace(
+/(https?:\/\/\S+)/g,
+'<a href="$1" target="_blank">$1</a>'
+);
 
 
 chatBox.appendChild(
@@ -346,3 +385,36 @@ chatBox.scrollHeight;
 });
 
 }
+
+
+
+const search=
+document.getElementById(
+'searchUser'
+);
+
+search.addEventListener(
+'input',
+()=>{
+
+const txt=
+search.value
+.toLowerCase();
+
+document
+.querySelectorAll('.user')
+.forEach(u=>{
+
+u.style.display=
+
+u.innerText
+.toLowerCase()
+.includes(txt)
+
+? 'flex'
+
+: 'none';
+
+});
+
+});
